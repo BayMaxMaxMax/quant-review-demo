@@ -2,7 +2,9 @@
 
 Do **not** push with the personal learning account used for the Obsidian vault.
 
-When the technical-persona GitHub account is ready:
+Persona account: **BayMaxMaxMax**.
+
+When logged in as that account:
 
 ```bash
 cd /Users/dzhuang/projects/quant-review-demo
