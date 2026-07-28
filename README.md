@@ -4,6 +4,8 @@
 
 This repository is a **90-day build-in-public learning demo** for a C++ backend engineer studying quant *operations* concepts and LLM engineering. It is **not** a trading system.
 
+**Learning path:** topics outside review (broader quant engineering, richer trade models) may appear in private study notes later; **this repo stays review-only** — see [`SCOPE.md`](SCOPE.md). Field names may *align with* fuller trade models as a subset; they do **not** implement orders, live trading, or backtests here.
+
 ## What this project does
 
 - Parse **fictional** mock CSV logs
