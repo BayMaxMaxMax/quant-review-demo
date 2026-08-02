@@ -4,70 +4,83 @@ All files under `data/` are **fictional**, for software-engineering learning onl
 
 They are unrelated to any real account, instrument, or market.
 
-## B1 schema (**locked** · review subset)
+## B1 schema (**locked** · review journal · single table)
 
-> **Locked for theme-map B1** (`docs/data: lock mock schema`).  
-> Parser / tests (**B2+**) must follow this file; schema changes need a new `docs/data:` commit.  
-> **Subset rule:** names/semantics may *align with* common trade-log models (e.g. direction / offset / fees).  
-> This CSV is **only** what post-hoc review needs. It is **not** a full OMS object model (no order book, no gateway, no yd/td split, no signals).
+> **Locked for theme-map B1** (aligned names: `docs/data: align schema names to industry`).  
+> This file is a **review journal projection** (one teaching table for post-hoc review).  
+> It is **not** a full OMS model and **not** a claim that brokers export a single file this way.  
+> **W3 first:** keep one table. A later split into e.g. `trades` + `positions` may land in W4+ without renaming PnL semantics.  
+> Parser / tests (**B2+**) must follow this file; schema changes need a new `docs/data:` commit.
+
+### Design rules
+
+1. **Industry-oriented names** where they match common trade/position vocabulary (vn.py-style `direction` / `offset` / `symbol` / `datetime`; PnL as `realized_pnl` / `unrealized_pnl`).  
+2. **Scheme A (no bucket/status column):** which PnL column is set encodes the review bucket — do **not** use `status` (collides with order lifecycle status in OMS models).  
+3. **Empty means absent** (not zero). Generators must omit the unused PnL cell; never use `0` to mean “no value”.  
+4. **Subset only:** no order book, gateway, yd/td split, account, ticks, or signals.
 
 ### Row meaning
 
-One row = one **fill / journal line** for teaching (open, close, or open-position mark).  
-Partially filled multi-trade orders are **out of scope** for W2; keep one logical fill per row.
+One row = one **review journal line** for teaching:
+
+- **Realized line:** a closed-round teaching result → set `realized_pnl` only.  
+- **Unrealized line:** an open-position mark → set `unrealized_pnl` only.
+
+Partially filled multi-trade orders are **out of scope** for W2; keep one logical line per row.
 
 ### Columns
 
-| Column | Type (logical) | Required | Meaning (review-only) | In this repo? |
-|---|---|---|---|---|
-| `trade_id` | string | yes | Stable unique id for the row (derived key OK) | **subset · yes** |
-| `timestamp` | ISO-8601 UTC+8 or naive local | yes | Event time for the row | **subset · yes** |
-| `instrument` | string | yes | Mock symbol only (e.g. `MOCK_FUT`) | **subset · yes** |
-| `direction` | enum | yes | `long` \| `short` | **subset · yes** |
-| `offset` | enum | yes | `open` \| `close` | **subset · yes** |
-| `status` | enum | yes | `closed` \| `open` — closed ⇒ realized path; open ⇒ floating only | **subset · yes** |
-| `price` | number | yes | Fill price; for `status=open` mark row use mark price here | **subset · yes** |
-| `volume` | number | yes | Size (mock units) | **subset · yes** |
-| `commission_open` | number | if known | Fee already incurred on open | **subset · yes** |
-| `commission_close` | number | if closed | Fee on close; **empty/0** while `status=open` | **subset · yes** |
-| `realized_net` | number | if `status=closed` | Net after fees for this closed round-trip (teaching); **must be empty** if open | **subset · yes** |
-| `floating_indication` | number | if `status=open` | Unsettled PnL hint only; **must be empty** if closed | **subset · yes** |
+| Column | Type (logical) | Required | Meaning (review-only) |
+|---|---|---|---|
+| `trade_id` | string | yes | Stable unique id for the row (derived key OK) |
+| `datetime` | ISO-8601 UTC+8 or naive local | yes | Event time for the row |
+| `symbol` | string | yes | Mock symbol only (e.g. `MOCK_FUT`) |
+| `direction` | enum | yes | `long` \| `short` |
+| `offset` | enum | yes | `open` \| `close` |
+| `price` | number | yes | Fill price; for unrealized mark rows use mark price |
+| `volume` | number | yes | Size (mock units) |
+| `commission_open` | number | if known | Fee already incurred on open |
+| `commission_close` | number | if closed | Fee on close; **empty/0** on unrealized mark rows |
+| `realized_pnl` | number | if realized line | Closed-round PnL **after fees** (teaching); **must be empty** on unrealized lines |
+| `unrealized_pnl` | number | if unrealized line | Open mark-to-market hint only; **must be empty** on realized lines |
 
-### Explicitly **not** in this subset (later / other systems)
+### Explicitly **not** in this subset
 
-- Order lifecycle / `vt_orderid` / partial fills chain  
+- Order lifecycle / order `status` enums  
 - Yesterday vs today position (`yd` / `td`) and `CLOSETODAY`  
 - Account balance / frozen / available  
 - Tick / depth / live gateway fields  
 - Strategy signals, targets, or backtest fills  
+- A separate `pnl_bucket` / journal `status` column (Scheme A)
 
 ### Aggregation rules (must match public Day5–D8 cards)
 
-1. **Sum `realized_net` only** over `status=closed` rows.  
-2. **Report `floating_indication` separately** for `status=open` rows — never add into realized total as a “settled” number.  
-3. Reject rows that set both `realized_net` and `floating_indication`.
+1. **Sum `realized_pnl` only** over rows where `realized_pnl` is present.  
+2. **Report `unrealized_pnl` separately** where present — never add into realized total as a “settled” number.  
+3. Reject rows that set both `realized_pnl` and `unrealized_pnl`.  
+4. Reject rows that set neither (every journal line must be exactly one bucket).
 
 ### Header line
 
 ```text
-trade_id,timestamp,instrument,direction,offset,status,price,volume,commission_open,commission_close,realized_net,floating_indication
+trade_id,datetime,symbol,direction,offset,price,volume,commission_open,commission_close,realized_pnl,unrealized_pnl
 ```
 
 ### Example fixture
 
-See [`examples/b1-two-rows.csv`](examples/b1-two-rows.csv) (also inlined below).
+See [`examples/b1-two-rows.csv`](examples/b1-two-rows.csv).
 
 ```text
-trade_id,timestamp,instrument,direction,offset,status,price,volume,commission_open,commission_close,realized_net,floating_indication
-t001,2026-07-27T10:00:00,MOCK_FUT,long,close,closed,100,1,2,2,6,
-t002,2026-07-27T15:00:00,MOCK_FUT,long,open,open,110,1,2,,,10
+trade_id,datetime,symbol,direction,offset,price,volume,commission_open,commission_close,realized_pnl,unrealized_pnl
+t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,
+t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 ```
 
-- Row `t001`: closed teaching net **+6** (aligns Day4: price-diff story − fees).  
-- Row `t002`: open floating **+10** (aligns Day5); do **not** treat +6 and +10 as one settled +16.  
-- Empty cells mean “no value” (not zero) for the mutually exclusive PnL columns.
+- Row `t001`: realized teaching net **+6** (aligns Day4).  
+- Row `t002`: unrealized **+10** (aligns Day5); do **not** treat +6 and +10 as one settled +16.
 
 ### Status
 
-- **Locked** for public note **B1** (复盘日志字段怎么设计).  
+- **Locked** (single-table review journal · Scheme A · industry-aligned names).  
+- Supersedes earlier draft columns (`timestamp` / `instrument` / `status` / `realized_net` / `floating_indication`).  
 - Next: **B2** — parse one CSV row + minimal tests against this schema.

@@ -39,7 +39,7 @@ cmake --build build
 
 ## Mock data
 
-See [`data/README.md`](data/README.md) — **B1 mock CSV schema is locked** (review subset).  
+See [`data/README.md`](data/README.md) — **B1 mock CSV schema is locked** (single-table review journal · Scheme A · industry-aligned names).  
 Fixture: [`data/examples/b1-two-rows.csv`](data/examples/b1-two-rows.csv).  
 All samples are **fictional** and unrelated to any real account, instrument, or market.
 
