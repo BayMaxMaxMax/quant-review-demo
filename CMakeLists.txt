@@ -4,5 +4,28 @@ project(quant-review-demo LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Skeleton only (W1). Sources land in later weeks.
-# add_executable(quant-review-demo src/main.cpp ...)
+add_library(quant_review
+  src/parse_trade_log.cpp
+)
+target_include_directories(quant_review PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.14.0
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+add_executable(quant_review_tests
+  tests/test_parse_trade_log.cpp
+)
+target_link_libraries(quant_review_tests
+  PRIVATE quant_review GTest::gtest_main
+)
+include(GoogleTest)
+gtest_discover_tests(quant_review_tests)

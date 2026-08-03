@@ -29,13 +29,14 @@ This repository is a **90-day build-in-public learning demo** for a C++ backend 
 
 ## Build / run
 
-Skeleton only in W1. Build targets will land with the first source commits.
-
 ```bash
 cmake -S . -B build
 cmake --build build
-# ./build/quant-review-demo   # when implemented
+ctest --test-dir build --output-on-failure
 ```
+
+Library: `quant_review` — `parse_trade_log_row` maps one CSV data line into `TradeLogRow` (`std::optional` for empty PnL cells; **空 ≠ 0**).  
+Mutual-exclusion checks for realized vs unrealized belong to a later validate step (B3), not parse.
 
 ## Mock data
 
