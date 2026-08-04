@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(quant_review
   src/parse_trade_log.cpp
+  src/validate_trade_log.cpp
 )
 target_include_directories(quant_review PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -23,6 +24,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(quant_review_tests
   tests/test_parse_trade_log.cpp
+  tests/test_validate_trade_log.cpp
 )
 target_link_libraries(quant_review_tests
   PRIVATE quant_review GTest::gtest_main

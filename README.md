@@ -35,8 +35,10 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-Library: `quant_review` — `parse_trade_log_row` maps one CSV data line into `TradeLogRow` (`std::optional` for empty PnL cells; **空 ≠ 0**).  
-Mutual-exclusion checks for realized vs unrealized belong to a later validate step (B3), not parse.
+Library: `quant_review`
+- `parse_trade_log_row` — map one CSV data line into `TradeLogRow` (`std::optional` for empty PnL cells; **空 ≠ 0**)
+- `validate_direction_and_offset` — enums `long|short` / `open|close`; realized bucket requires `close`, unrealized requires `open` (reject mismatches before aggregate)
+
 
 ## Mock data
 
