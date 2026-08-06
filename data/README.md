@@ -83,4 +83,4 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 
 - **Locked** (single-table review journal · Scheme A · industry-aligned names).  
 - Supersedes earlier draft columns (`timestamp` / `instrument` / `status` / `realized_net` / `floating_indication`).  
-- Next: **B2** — parse one CSV row + minimal tests against this schema.
+- Aggregate (Day12): `sum_realized_pnl` sums rule 1 only; rule 2 (report unrealized separately) is Day13.

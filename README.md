@@ -38,6 +38,7 @@ ctest --test-dir build --output-on-failure
 Library: `quant_review`
 - `parse_trade_log_row` — map one CSV data line into `TradeLogRow` (`std::optional` for empty PnL cells; **空 ≠ 0**)
 - `validate_direction_and_offset` — enums `long|short` / `open|close`; realized bucket requires `close`, unrealized requires `open` (reject mismatches before aggregate)
+- `sum_realized_pnl` — sum `realized_pnl` only where present; unrealized rows do not enter this total
 
 
 ## Mock data
