@@ -6,9 +6,12 @@
 #include <vector>
 
 using quant_review::ParseError;
+using quant_review::SeparatePnlReport;
 using quant_review::TradeLogRow;
 using quant_review::parse_trade_log_row;
+using quant_review::report_separate_pnl;
 using quant_review::sum_realized_pnl;
+using quant_review::sum_unrealized_pnl;
 
 namespace {
 
@@ -57,4 +60,39 @@ TEST(SumRealizedPnl, ZeroRealizedStillCounts) {
       MustParse("t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
   };
   EXPECT_DOUBLE_EQ(sum_realized_pnl(rows), 0.0);
+}
+
+TEST(SumUnrealizedPnl, TwoRowFixtureSumsOnlyUnrealized) {
+  // Day13: floating hint +10; realized row does not enter this bucket
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  EXPECT_DOUBLE_EQ(sum_unrealized_pnl(rows), 10.0);
+}
+
+TEST(SumUnrealizedPnl, OnlyRealizedIsZero) {
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+  };
+  EXPECT_DOUBLE_EQ(sum_unrealized_pnl(rows), 0.0);
+}
+
+TEST(ReportSeparatePnl, TwoBucketsNotMixed) {
+  // Aligns Day13 mock: report +6 settled and +10 floating separately (not one +16)
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const SeparatePnlReport report = report_separate_pnl(rows);
+  EXPECT_DOUBLE_EQ(report.realized_total, 6.0);
+  EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 10.0);
+  EXPECT_FALSE(report.realized_total == 16.0);
+  EXPECT_FALSE(report.unrealized_hint_total == 16.0);
+}
+
+TEST(ReportSeparatePnl, EmptyBothZero) {
+  const SeparatePnlReport report = report_separate_pnl({});
+  EXPECT_DOUBLE_EQ(report.realized_total, 0.0);
+  EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 0.0);
 }
