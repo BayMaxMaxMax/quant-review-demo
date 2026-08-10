@@ -126,3 +126,17 @@ TEST(WinRateClosed, OnlyUnrealizedIsZeroDenominator) {
   EXPECT_EQ(report.wins, 0u);
   EXPECT_EQ(report.closed_count, 0u);
 }
+
+TEST(WinRateClosed, Day15ScratchInDenomNotWin) {
+  // Day15: closed +6 win, closed -4 loss, closed 0 scratch → 1/3 not 1/2
+  // Scratch enters denominator, does not count as a win.
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T11:00:00,MOCK_FUT,long,close,100,1,2,2,-4,"),
+      MustParse("t003,2026-07-27T12:00:00,MOCK_FUT,long,close,100,1,2,2,0,"),
+  };
+  const WinRateReport report = win_rate_closed(rows);
+  EXPECT_EQ(report.wins, 1u);
+  EXPECT_EQ(report.closed_count, 3u);
+  EXPECT_FALSE(report.closed_count == 2u);
+}
