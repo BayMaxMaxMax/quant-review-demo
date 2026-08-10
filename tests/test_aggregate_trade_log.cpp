@@ -8,10 +8,12 @@
 using quant_review::ParseError;
 using quant_review::SeparatePnlReport;
 using quant_review::TradeLogRow;
+using quant_review::WinRateReport;
 using quant_review::parse_trade_log_row;
 using quant_review::report_separate_pnl;
 using quant_review::sum_realized_pnl;
 using quant_review::sum_unrealized_pnl;
+using quant_review::win_rate_closed;
 
 namespace {
 
@@ -95,4 +97,32 @@ TEST(ReportSeparatePnl, EmptyBothZero) {
   const SeparatePnlReport report = report_separate_pnl({});
   EXPECT_DOUBLE_EQ(report.realized_total, 0.0);
   EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 0.0);
+}
+
+TEST(WinRateClosed, Day14MockIsOneHalfNotOneThird) {
+  // Day14: closed +6 win, closed -4 loss, open +10 skipped → 1/2 not 1/3
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T11:00:00,MOCK_FUT,long,close,100,1,2,2,-4,"),
+      MustParse("t003,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const WinRateReport report = win_rate_closed(rows);
+  EXPECT_EQ(report.wins, 1u);
+  EXPECT_EQ(report.closed_count, 2u);
+  EXPECT_FALSE(report.closed_count == 3u);
+}
+
+TEST(WinRateClosed, EmptyIsZeroOverZero) {
+  const WinRateReport report = win_rate_closed({});
+  EXPECT_EQ(report.wins, 0u);
+  EXPECT_EQ(report.closed_count, 0u);
+}
+
+TEST(WinRateClosed, OnlyUnrealizedIsZeroDenominator) {
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t003,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const WinRateReport report = win_rate_closed(rows);
+  EXPECT_EQ(report.wins, 0u);
+  EXPECT_EQ(report.closed_count, 0u);
 }

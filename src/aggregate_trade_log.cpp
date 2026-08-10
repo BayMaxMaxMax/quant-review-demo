@@ -29,4 +29,18 @@ SeparatePnlReport report_separate_pnl(const std::vector<TradeLogRow>& rows) {
   return out;
 }
 
+WinRateReport win_rate_closed(const std::vector<TradeLogRow>& rows) {
+  WinRateReport out;
+  for (const TradeLogRow& row : rows) {
+    if (!row.realized_pnl.has_value()) {
+      continue;
+    }
+    ++out.closed_count;
+    if (*row.realized_pnl > 0.0) {
+      ++out.wins;
+    }
+  }
+  return out;
+}
+
 }  // namespace quant_review

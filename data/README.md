@@ -58,7 +58,8 @@ Partially filled multi-trade orders are **out of scope** for W2; keep one logica
 1. **Sum `realized_pnl` only** over rows where `realized_pnl` is present.  
 2. **Report `unrealized_pnl` separately** where present — never add into realized total as a “settled” number.  
 3. Reject rows that set both `realized_pnl` and `unrealized_pnl`.  
-4. Reject rows that set neither (every journal line must be exactly one bucket).
+4. Reject rows that set neither (every journal line must be exactly one bucket).  
+5. **Win-rate draft:** denominator = rows with `realized_pnl` present; wins = among those with `realized_pnl > 0`. Unrealized-only rows do **not** enter. Scratch/`==0` controversy left open (currently in denominator, not a win).
 
 ### Header line
 
@@ -84,4 +85,5 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 - **Locked** (single-table review journal · Scheme A · industry-aligned names).  
 - Supersedes earlier draft columns (`timestamp` / `instrument` / `status` / `realized_net` / `floating_indication`).  
 - Aggregate (Day12): `sum_realized_pnl` sums rule 1 only.  
-- Report floating (Day13): `sum_unrealized_pnl` / `report_separate_pnl` cover rule 2 (separate bucket).
+- Report floating (Day13): `sum_unrealized_pnl` / `report_separate_pnl` cover rule 2 (separate bucket).  
+- Win rate (Day14): `win_rate_closed` covers rule 5 (closed denominator only).
