@@ -112,13 +112,15 @@ TEST(WinRateClosed, Day14MockIsOneHalfNotOneThird) {
   EXPECT_FALSE(report.closed_count == 3u);
 }
 
-TEST(WinRateClosed, EmptyIsZeroOverZero) {
+TEST(WinRateClosed, Day16EmptyIsZeroOverZeroNotZeroPercent) {
+  // Day16: no closed rows → 0/0 (no denominator), do not invent 0%
   const WinRateReport report = win_rate_closed({});
   EXPECT_EQ(report.wins, 0u);
   EXPECT_EQ(report.closed_count, 0u);
 }
 
-TEST(WinRateClosed, OnlyUnrealizedIsZeroDenominator) {
+TEST(WinRateClosed, Day16OnlyUnrealizedIsZeroOverZero) {
+  // Day16: unrealized-only table still has no closed denominator → 0/0
   const std::vector<TradeLogRow> rows = {
       MustParse("t003,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
   };

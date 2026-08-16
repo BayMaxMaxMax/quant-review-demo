@@ -23,10 +23,11 @@ struct SeparatePnlReport {
 
 SeparatePnlReport report_separate_pnl(const std::vector<TradeLogRow>& rows);
 
-/// Win-rate draft (Day14–15): denominator = rows with `realized_pnl` present;
+/// Win-rate draft (Day14–16): denominator = rows with `realized_pnl` present;
 /// wins = among those, `realized_pnl > 0`. Unrealized-only rows do not enter.
 /// Zero realized (`== 0`, scratch) counts in the denominator but not as a win
 /// (Day15 locked: 进分母、不计胜).
+/// Empty / no closed rows → wins=0, closed_count=0 (Day16: report 0/0, not 0%).
 struct WinRateReport {
   std::size_t wins = 0;
   std::size_t closed_count = 0;

@@ -86,4 +86,4 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 - Supersedes earlier draft columns (`timestamp` / `instrument` / `status` / `realized_net` / `floating_indication`).  
 - Aggregate (Day12): `sum_realized_pnl` sums rule 1 only.  
 - Report floating (Day13): `sum_unrealized_pnl` / `report_separate_pnl` cover rule 2 (separate bucket).  
-- Win rate (Day14–15): `win_rate_closed` covers rule 5 (closed denominator only; scratch `== 0` in denom, not a win).
+- Win rate (Day14–16): `win_rate_closed` covers rule 5 (closed denominator only; scratch `== 0` in denom, not a win; empty / no closed → 0/0, not 0%).

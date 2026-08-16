@@ -40,7 +40,7 @@ Library: `quant_review`
 - `validate_direction_and_offset` — enums `long|short` / `open|close`; realized bucket requires `close`, unrealized requires `open` (reject mismatches before aggregate)
 - `sum_realized_pnl` — sum `realized_pnl` only where present; unrealized rows do not enter this total
 - `sum_unrealized_pnl` / `report_separate_pnl` — floating hint total kept in a **separate** bucket (not mixed into realized)
-- `win_rate_closed` — draft win rate: wins among closed / closed count; unrealized rows do **not** enter the denominator; scratch (`realized_pnl == 0`) **does** enter the denominator but is **not** a win (Day15)
+- `win_rate_closed` — draft win rate: wins among closed / closed count; unrealized rows do **not** enter the denominator; scratch (`realized_pnl == 0`) **does** enter the denominator but is **not** a win (Day15); empty / no closed → **0/0**, not a fabricated **0%** (Day16)
 
 
 ## Mock data
