@@ -41,6 +41,7 @@ Library: `quant_review`
 - `sum_realized_pnl` — sum `realized_pnl` only where present; unrealized rows do not enter this total
 - `sum_unrealized_pnl` / `report_separate_pnl` — floating hint total kept in a **separate** bucket (not mixed into realized)
 - `win_rate_closed` — draft win rate: wins among closed / closed count; unrealized rows do **not** enter the denominator; scratch (`realized_pnl == 0`) **does** enter the denominator but is **not** a win (Day15); empty / no closed → **0/0**, not a fabricated **0%** (Day16); all closed losses → **0/n**, which may be said as **0%** (Day17)
+- `report_review_summary` — one-shot review card: realized total + unrealized hint + wins/closed (Day18); composes the APIs above; does **not** read files or gate dirty rows
 
 
 ## Mock data

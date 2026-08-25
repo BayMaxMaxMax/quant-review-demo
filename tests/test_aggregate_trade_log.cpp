@@ -6,10 +6,12 @@
 #include <vector>
 
 using quant_review::ParseError;
+using quant_review::ReviewSummaryReport;
 using quant_review::SeparatePnlReport;
 using quant_review::TradeLogRow;
 using quant_review::WinRateReport;
 using quant_review::parse_trade_log_row;
+using quant_review::report_review_summary;
 using quant_review::report_separate_pnl;
 using quant_review::sum_realized_pnl;
 using quant_review::sum_unrealized_pnl;
@@ -153,4 +155,30 @@ TEST(WinRateClosed, Day15ScratchInDenomNotWin) {
   EXPECT_EQ(report.wins, 1u);
   EXPECT_EQ(report.closed_count, 3u);
   EXPECT_FALSE(report.closed_count == 2u);
+}
+
+TEST(ReportReviewSummary, Day18OneShotIsPlusTwoPlusTenAndOneHalf) {
+  // Day18: same Day14 rows → one report: realized +2, floating +10, win rate 1/2
+  // Not a mixed +12; not win rate 1/3.
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T11:00:00,MOCK_FUT,long,close,100,1,2,2,-4,"),
+      MustParse("t003,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const ReviewSummaryReport report = report_review_summary(rows);
+  EXPECT_DOUBLE_EQ(report.realized_total, 2.0);
+  EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 10.0);
+  EXPECT_EQ(report.wins, 1u);
+  EXPECT_EQ(report.closed_count, 2u);
+  // Guardrails: not a mixed +12 card; not win-rate 1/3
+  EXPECT_FALSE(report.realized_total == 12.0);
+  EXPECT_FALSE(report.closed_count == 3u);
+}
+
+TEST(ReportReviewSummary, EmptyIsZerosAndZeroOverZero) {
+  const ReviewSummaryReport report = report_review_summary({});
+  EXPECT_DOUBLE_EQ(report.realized_total, 0.0);
+  EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 0.0);
+  EXPECT_EQ(report.wins, 0u);
+  EXPECT_EQ(report.closed_count, 0u);
 }

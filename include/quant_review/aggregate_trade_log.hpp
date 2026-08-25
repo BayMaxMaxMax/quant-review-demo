@@ -37,4 +37,17 @@ struct WinRateReport {
 
 WinRateReport win_rate_closed(const std::vector<TradeLogRow>& rows);
 
+/// One-shot review summary (Day18): two buckets + closed win-rate in one report.
+/// Composes `report_separate_pnl` and `win_rate_closed` — does not change those
+/// rules. Does not read files or reject dirty rows (Day19/Day20).
+/// Day14 teaching mock → realized +2, unrealized hint +10, wins/closed 1/2.
+struct ReviewSummaryReport {
+  double realized_total = 0.0;
+  double unrealized_hint_total = 0.0;
+  std::size_t wins = 0;
+  std::size_t closed_count = 0;
+};
+
+ReviewSummaryReport report_review_summary(const std::vector<TradeLogRow>& rows);
+
 }  // namespace quant_review

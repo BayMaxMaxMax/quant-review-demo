@@ -43,4 +43,15 @@ WinRateReport win_rate_closed(const std::vector<TradeLogRow>& rows) {
   return out;
 }
 
+ReviewSummaryReport report_review_summary(const std::vector<TradeLogRow>& rows) {
+  const SeparatePnlReport pnl = report_separate_pnl(rows);
+  const WinRateReport wr = win_rate_closed(rows);
+  ReviewSummaryReport out;
+  out.realized_total = pnl.realized_total;
+  out.unrealized_hint_total = pnl.unrealized_hint_total;
+  out.wins = wr.wins;
+  out.closed_count = wr.closed_count;
+  return out;
+}
+
 }  // namespace quant_review
