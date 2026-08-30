@@ -87,4 +87,5 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 - Aggregate (Day12): `sum_realized_pnl` sums rule 1 only.  
 - Report floating (Day13): `sum_unrealized_pnl` / `report_separate_pnl` cover rule 2 (separate bucket).  
 - Win rate (Day14–17): `win_rate_closed` covers rule 5 (closed denominator only; scratch `== 0` in denom, not a win; empty / no closed → 0/0, not 0%; all closed losses → 0/n, which may be said as 0%).  
-- One-shot summary (Day18): `report_review_summary` returns realized total + unrealized hint + wins/closed together (Day14 mock → +2 / +10 / 1/2); no file I/O, no dirty-row gate.
+- One-shot summary (Day18): `report_review_summary` returns realized total + unrealized hint + wins/closed together (Day14 mock → +2 / +10 / 1/2); no file I/O, no dirty-row gate.  
+- Load whole file (Day19): `load_trade_log_csv` skips the header and returns a `vector` of data rows (`b1-two-rows.csv` → 2 rows); parse failure aborts load; dirty-row / validate gates stay Day20.
