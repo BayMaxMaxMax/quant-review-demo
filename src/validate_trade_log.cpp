@@ -52,4 +52,17 @@ bool validate_direction_and_offset(const TradeLogRow& row, ValidationError& err)
   return true;
 }
 
+bool gate_rows_for_report(const std::vector<TradeLogRow>& rows,
+                          ValidationError& err) {
+  err.message.clear();
+  for (std::size_t i = 0; i < rows.size(); ++i) {
+    ValidationError row_err;
+    if (!validate_direction_and_offset(rows[i], row_err)) {
+      err.message = "row " + std::to_string(i) + ": " + row_err.message;
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace quant_review

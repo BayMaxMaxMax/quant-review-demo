@@ -39,8 +39,8 @@ WinRateReport win_rate_closed(const std::vector<TradeLogRow>& rows);
 
 /// One-shot review summary (Day18): two buckets + closed win-rate in one report.
 /// Composes `report_separate_pnl` and `win_rate_closed` — does not change those
-/// rules. Does not read files (`load_trade_log_csv`, Day19) or reject dirty
-/// rows (Day20).
+/// rules. Does not read files (`load_trade_log_csv`, Day19). Call
+/// `gate_rows_for_report` first (Day20) before treating a list as reportable.
 /// Day14 teaching mock → realized +2, unrealized hint +10, wins/closed 1/2.
 struct ReviewSummaryReport {
   double realized_total = 0.0;

@@ -29,6 +29,7 @@ add_executable(quant_review_tests
   tests/test_validate_trade_log.cpp
   tests/test_aggregate_trade_log.cpp
   tests/test_load_trade_log.cpp
+  tests/test_gate_trade_log.cpp
 )
 target_link_libraries(quant_review_tests
   PRIVATE quant_review GTest::gtest_main
