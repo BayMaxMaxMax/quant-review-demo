@@ -2,6 +2,7 @@
 
 #include "quant_review/trade_log_row.hpp"
 
+#include <map>
 #include <vector>
 
 namespace quant_review {
@@ -50,5 +51,13 @@ struct ReviewSummaryReport {
 };
 
 ReviewSummaryReport report_review_summary(const std::vector<TradeLogRow>& rows);
+
+/// Hourly realized totals (Day21): key = hour-of-day 0–23 from `datetime`
+/// (`...THH:...`); only rows with `realized_pnl` present enter that hour's sum.
+/// Unrealized-only rows do not create or increase an hour bucket.
+/// Datetimes without a parseable `THH` are skipped (teaching ISO-8601 mocks).
+/// Day21 mock: 10:00 closed +6 → {10: 6}; 15:00 open +10 → hour 15 absent.
+std::map<int, double> sum_realized_pnl_by_hour(
+    const std::vector<TradeLogRow>& rows);
 
 }  // namespace quant_review

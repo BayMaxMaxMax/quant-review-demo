@@ -14,6 +14,7 @@ using quant_review::parse_trade_log_row;
 using quant_review::report_review_summary;
 using quant_review::report_separate_pnl;
 using quant_review::sum_realized_pnl;
+using quant_review::sum_realized_pnl_by_hour;
 using quant_review::sum_unrealized_pnl;
 using quant_review::win_rate_closed;
 
@@ -181,4 +182,37 @@ TEST(ReportReviewSummary, EmptyIsZerosAndZeroOverZero) {
   EXPECT_DOUBLE_EQ(report.unrealized_hint_total, 0.0);
   EXPECT_EQ(report.wins, 0u);
   EXPECT_EQ(report.closed_count, 0u);
+}
+
+TEST(SumRealizedPnlByHour, Day21MockHour10PlusSixHour15Absent) {
+  // Day21: 10:00 closed +6 → hour 10 = +6; 15:00 unrealized +10 → no hour-15 bucket
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const auto by_hour = sum_realized_pnl_by_hour(rows);
+  ASSERT_EQ(by_hour.size(), 1u);
+  ASSERT_TRUE(by_hour.count(10) == 1);
+  EXPECT_DOUBLE_EQ(by_hour.at(10), 6.0);
+  EXPECT_EQ(by_hour.count(15), 0u);
+  // Guardrail: do not dump unrealized into an hourly closed bucket
+  EXPECT_FALSE(by_hour.count(15) == 1 && by_hour.at(15) == 10.0);
+}
+
+TEST(SumRealizedPnlByHour, EmptyIsEmptyMap) {
+  EXPECT_TRUE(sum_realized_pnl_by_hour({}).empty());
+}
+
+TEST(SumRealizedPnlByHour, TwoClosedHoursSumSeparately) {
+  // Optional hardening: two closed rows in different hours stay in separate buckets
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t001,2026-07-27T10:00:00,MOCK_FUT,long,close,100,1,2,2,6,"),
+      MustParse("t003,2026-07-27T14:00:00,MOCK_FUT,long,close,100,1,2,2,-4,"),
+      MustParse("t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10"),
+  };
+  const auto by_hour = sum_realized_pnl_by_hour(rows);
+  ASSERT_EQ(by_hour.size(), 2u);
+  EXPECT_DOUBLE_EQ(by_hour.at(10), 6.0);
+  EXPECT_DOUBLE_EQ(by_hour.at(14), -4.0);
+  EXPECT_EQ(by_hour.count(15), 0u);
 }

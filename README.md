@@ -44,6 +44,7 @@ Library: `quant_review`
 - `report_review_summary` — one-shot review card: realized total + unrealized hint + wins/closed (Day18); composes the APIs above; does **not** read files or gate dirty rows
 - `load_trade_log_csv` — read a whole mock CSV into `vector<TradeLogRow>` (Day19): skip header, parse each data line; does **not** run dirty-row gates (Day20)
 - `gate_rows_for_report` — Day20 dirty-row gate: validate every row; any failure → **no report** (does not skip dirty rows and continue)
+- `sum_realized_pnl_by_hour` — Day21: bucket **closed** `realized_pnl` by hour-of-day from `datetime`; unrealized rows do **not** enter hourly closed buckets
 
 
 ## Mock data
