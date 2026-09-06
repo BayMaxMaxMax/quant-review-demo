@@ -11,6 +11,7 @@ This repository is a **90-day build-in-public learning demo** for a C++ backend 
 - Parse **fictional** mock CSV logs
 - Compute deterministic review statistics (hourly PnL, instrument win-rate style summaries, static anomaly flags)
 - Generate a structured review report (planned; DeepSeek chat API only)
+- Render a **deterministic Markdown draft** from computed stats (**no LLM** · Day22)
 
 ## What this project does NOT do
 
@@ -45,6 +46,7 @@ Library: `quant_review`
 - `load_trade_log_csv` — read a whole mock CSV into `vector<TradeLogRow>` (Day19): skip header, parse each data line; does **not** run dirty-row gates (Day20)
 - `gate_rows_for_report` — Day20 dirty-row gate: validate every row; any failure → **no report** (does not skip dirty rows and continue)
 - `sum_realized_pnl_by_hour` — Day21: bucket **closed** `realized_pnl` by hour-of-day from `datetime`; unrealized rows do **not** enter hourly closed buckets
+- `render_review_markdown` — Day22: fixed Markdown draft from `ReviewSummaryReport` (**no network / no LLM**)
 
 
 ## Mock data
