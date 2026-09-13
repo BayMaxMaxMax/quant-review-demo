@@ -11,6 +11,7 @@ add_library(quant_review
   src/load_trade_log.cpp
   src/render_review_markdown.cpp
   src/render_review_json.cpp
+  src/flag_anomaly.cpp
 )
 target_include_directories(quant_review PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -34,6 +35,7 @@ add_executable(quant_review_tests
   tests/test_gate_trade_log.cpp
   tests/test_render_review_markdown.cpp
   tests/test_render_review_json.cpp
+  tests/test_flag_anomaly.cpp
 )
 target_link_libraries(quant_review_tests
   PRIVATE quant_review GTest::gtest_main
