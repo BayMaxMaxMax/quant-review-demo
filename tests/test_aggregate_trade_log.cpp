@@ -15,6 +15,7 @@ using quant_review::report_review_summary;
 using quant_review::report_separate_pnl;
 using quant_review::sum_realized_pnl;
 using quant_review::sum_realized_pnl_by_hour;
+using quant_review::sum_realized_pnl_by_symbol;
 using quant_review::sum_unrealized_pnl;
 using quant_review::win_rate_closed;
 
@@ -215,4 +216,41 @@ TEST(SumRealizedPnlByHour, TwoClosedHoursSumSeparately) {
   EXPECT_DOUBLE_EQ(by_hour.at(10), 6.0);
   EXPECT_DOUBLE_EQ(by_hour.at(14), -4.0);
   EXPECT_EQ(by_hour.count(15), 0u);
+}
+
+TEST(SumRealizedPnlBySymbol, Day25MockAPlusSixBMinusTwo) {
+  // Day25: MOCK_A closed +6, MOCK_B closed -2; unrealized does not enter.
+  // Guardrail: this API is sums only — not win rate / ranking (≠ H).
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t_a,2026-09-15T10:00:00,MOCK_A,long,close,100,1,2,2,6,"),
+      MustParse("t_b,2026-09-15T11:00:00,MOCK_B,long,close,100,1,2,2,-2,"),
+      MustParse("t_u,2026-09-15T15:00:00,MOCK_A,long,open,110,1,2,,,10"),
+  };
+  const auto by_symbol = sum_realized_pnl_by_symbol(rows);
+  ASSERT_EQ(by_symbol.size(), 2u);
+  EXPECT_DOUBLE_EQ(by_symbol.at("MOCK_A"), 6.0);
+  EXPECT_DOUBLE_EQ(by_symbol.at("MOCK_B"), -2.0);
+  // Unrealized on MOCK_A must not inflate A's closed sum to 16
+  EXPECT_FALSE(by_symbol.at("MOCK_A") == 16.0);
+}
+
+TEST(SumRealizedPnlBySymbol, EmptyIsEmptyMap) {
+  EXPECT_TRUE(sum_realized_pnl_by_symbol({}).empty());
+}
+
+TEST(SumRealizedPnlBySymbol, SameSymbolClosedRowsAccumulate) {
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t1,2026-09-15T10:00:00,MOCK_A,long,close,100,1,2,2,6,"),
+      MustParse("t2,2026-09-15T11:00:00,MOCK_A,long,close,100,1,2,2,-1,"),
+  };
+  const auto by_symbol = sum_realized_pnl_by_symbol(rows);
+  ASSERT_EQ(by_symbol.size(), 1u);
+  EXPECT_DOUBLE_EQ(by_symbol.at("MOCK_A"), 5.0);
+}
+
+TEST(SumRealizedPnlBySymbol, OnlyUnrealizedYieldsEmptyMap) {
+  const std::vector<TradeLogRow> rows = {
+      MustParse("t_u,2026-09-15T15:00:00,MOCK_A,long,open,110,1,2,,,10"),
+  };
+  EXPECT_TRUE(sum_realized_pnl_by_symbol(rows).empty());
 }

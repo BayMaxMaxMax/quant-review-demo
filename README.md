@@ -46,6 +46,7 @@ Library: `quant_review`
 - `load_trade_log_csv` — read a whole mock CSV into `vector<TradeLogRow>` (Day19): skip header, parse each data line; does **not** run dirty-row gates (Day20)
 - `gate_rows_for_report` — Day20 dirty-row gate: validate every row; any failure → **no report** (does not skip dirty rows and continue)
 - `sum_realized_pnl_by_hour` — Day21: bucket **closed** `realized_pnl` by hour-of-day from `datetime`; unrealized rows do **not** enter hourly closed buckets
+- `sum_realized_pnl_by_symbol` — Day25: bucket **closed** `realized_pnl` by `symbol`; unrealized rows do **not** enter; **no** win-rate / ranking (contrast parked H)
 - `render_review_markdown` — Day22: fixed Markdown draft from `ReviewSummaryReport` (**no network / no LLM**)
 - `render_review_json` — Day23: fixed intermediate JSON from `ReviewSummaryReport` (**no network / no LLM**)
 - `flag_consecutive_closed_losses` — Day24: static anomaly tip when ≥`n` consecutive **closed** losses (default `n=2`); unrealized rows skipped; **does not** gate the report (contrast Day20)

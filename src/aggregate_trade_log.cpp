@@ -97,4 +97,16 @@ std::map<int, double> sum_realized_pnl_by_hour(
   return by_hour;
 }
 
+std::map<std::string, double> sum_realized_pnl_by_symbol(
+    const std::vector<TradeLogRow>& rows) {
+  std::map<std::string, double> by_symbol;
+  for (const TradeLogRow& row : rows) {
+    if (!row.realized_pnl.has_value()) {
+      continue;
+    }
+    by_symbol[row.symbol] += *row.realized_pnl;
+  }
+  return by_symbol;
+}
+
 }  // namespace quant_review

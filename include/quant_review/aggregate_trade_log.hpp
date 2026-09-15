@@ -60,4 +60,12 @@ ReviewSummaryReport report_review_summary(const std::vector<TradeLogRow>& rows);
 std::map<int, double> sum_realized_pnl_by_hour(
     const std::vector<TradeLogRow>& rows);
 
+/// Per-symbol realized totals (Day25): key = `symbol`; only rows with
+/// `realized_pnl` present enter that symbol's sum.
+/// Unrealized-only rows do not create or increase a symbol bucket.
+/// Does **not** compute win rate / ranking (contrast parked topic H).
+/// Day25 mock: MOCK_A closed +6, MOCK_B closed -2 → {MOCK_A: 6, MOCK_B: -2}.
+std::map<std::string, double> sum_realized_pnl_by_symbol(
+    const std::vector<TradeLogRow>& rows);
+
 }  // namespace quant_review
