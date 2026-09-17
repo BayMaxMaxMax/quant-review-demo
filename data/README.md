@@ -91,4 +91,5 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 - Load whole file (Day19): `load_trade_log_csv` skips the header and returns a `vector` of data rows (`b1-two-rows.csv` → 2 rows); parse failure aborts load; dirty-row / validate gates stay Day20.  
 - Dirty-row gate (Day20): `gate_rows_for_report` validates every row; any failure → whole list fails (no report); does **not** skip dirty rows and continue.  
 - Static anomaly flag (Day24): `flag_consecutive_closed_losses` looks only at rows with `realized_pnl`; default **2** consecutive closed losses (`< 0`) → **one** tip; scratch/`== 0` or win resets; unrealized-only rows are skipped; **report still allowed** (not a gate).  
-- Per-symbol realized (Day25): `sum_realized_pnl_by_symbol` buckets closed `realized_pnl` by `symbol`; unrealized-only rows skipped; **no** win-rate / ranking (not topic H).
+- Per-symbol realized (Day25): `sum_realized_pnl_by_symbol` buckets closed `realized_pnl` by `symbol`; unrealized-only rows skipped; **no** win-rate / ranking (not topic H).  
+- JSON + flags (Day26): `render_review_json(summary, flags)` hangs already-computed tips under `"anomaly_alerts"`; empty input still emits `"anomaly_alerts": []`; does **not** re-run Day24 detection.

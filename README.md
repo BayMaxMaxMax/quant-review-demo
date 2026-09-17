@@ -48,7 +48,7 @@ Library: `quant_review`
 - `sum_realized_pnl_by_hour` — Day21: bucket **closed** `realized_pnl` by hour-of-day from `datetime`; unrealized rows do **not** enter hourly closed buckets
 - `sum_realized_pnl_by_symbol` — Day25: bucket **closed** `realized_pnl` by `symbol`; unrealized rows do **not** enter; **no** win-rate / ranking (contrast parked H)
 - `render_review_markdown` — Day22: fixed Markdown draft from `ReviewSummaryReport` (**no network / no LLM**)
-- `render_review_json` — Day23: fixed intermediate JSON from `ReviewSummaryReport` (**no network / no LLM**)
+- `render_review_json` — Day23/Day26: fixed intermediate JSON from `ReviewSummaryReport` (+ optional `anomaly_alerts`); empty flags → still emit `"anomaly_alerts": []` (**no network / no LLM**; does **not** recompute flags)
 - `flag_consecutive_closed_losses` — Day24: static anomaly tip when ≥`n` consecutive **closed** losses (default `n=2`); unrealized rows skipped; **does not** gate the report (contrast Day20)
 
 
