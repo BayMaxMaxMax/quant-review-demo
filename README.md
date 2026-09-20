@@ -50,6 +50,7 @@ Library: `quant_review`
 - `render_review_markdown` — Day22: fixed Markdown draft from `ReviewSummaryReport` (**no network / no LLM**)
 - `render_review_json` — Day23/Day26: fixed intermediate JSON from `ReviewSummaryReport` (+ optional `anomaly_alerts`); empty flags → still emit `"anomaly_alerts": []` (**no network / no LLM**; does **not** recompute flags)
 - `flag_consecutive_closed_losses` — Day24: static anomaly tip when ≥`n` consecutive **closed** losses (default `n=2`); unrealized rows skipped; **does not** gate the report (contrast Day20)
+- `build_review_prompt_payload` — Day27: deterministic LLM-facing draft from summary (+ optional flags); **no network / no LLM / no API key**; does **not** include raw trade rows
 
 
 ## Mock data
