@@ -95,3 +95,4 @@ t002,2026-07-27T15:00:00,MOCK_FUT,long,open,110,1,2,,,10
 - JSON + flags (Day26): `render_review_json(summary, flags)` hangs already-computed tips under `"anomaly_alerts"`; empty input still emits `"anomaly_alerts": []`; does **not** re-run Day24 detection.  
 - Prompt payload (Day27): `build_review_prompt_payload(summary, flags)` assembles a deterministic LLM-facing draft from aggregates (+ optional tips); **no network / no key**; does **not** include raw trade rows.  
 - Report skeleton (Day28): `render_review_skeleton(fixture_reply)` turns a **written fixture** fake reply into fixed Markdown headings; **no network / no key**; missing keys still keep headings with 「（无）」.
+- Fixture field check (Day29): `check_review_fixture_fields(fixture_reply)` reports whether required keys are present (`realized_total` / `unrealized_hint_total` / `win_rate`); **no network / no key**; ok fields ≠ called a model.

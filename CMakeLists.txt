@@ -14,6 +14,7 @@ add_library(quant_review
   src/flag_anomaly.cpp
   src/build_review_prompt_payload.cpp
   src/render_review_skeleton.cpp
+  src/check_review_fixture_fields.cpp
 )
 target_include_directories(quant_review PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -40,6 +41,7 @@ add_executable(quant_review_tests
   tests/test_flag_anomaly.cpp
   tests/test_build_review_prompt_payload.cpp
   tests/test_render_review_skeleton.cpp
+  tests/test_check_review_fixture_fields.cpp
 )
 target_link_libraries(quant_review_tests
   PRIVATE quant_review GTest::gtest_main

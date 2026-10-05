@@ -52,6 +52,7 @@ Library: `quant_review`
 - `flag_consecutive_closed_losses` — Day24: static anomaly tip when ≥`n` consecutive **closed** losses (default `n=2`); unrealized rows skipped; **does not** gate the report (contrast Day20)
 - `build_review_prompt_payload` — Day27: deterministic LLM-facing draft from summary (+ optional flags); **no network / no LLM / no API key**; does **not** include raw trade rows
 - `render_review_skeleton` — Day28: turn a **fixture** fake model reply into a fixed report skeleton; **no network / no LLM / no API key**; empty fixture still emits headings
+- `check_review_fixture_fields` — Day29: check required keys on a **fixture** fake reply (`realized_total` / `unrealized_hint_total` / `win_rate`); reports missing keys; **no network / no LLM / no API key**; field check ≠ calling a model
 
 
 ## Mock data
